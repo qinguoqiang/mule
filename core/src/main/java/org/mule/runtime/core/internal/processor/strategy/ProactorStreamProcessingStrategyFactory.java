@@ -32,10 +32,11 @@ import org.mule.runtime.core.api.processor.ReactiveProcessor.ProcessingType;
 import org.mule.runtime.core.api.processor.strategy.ProcessingStrategy;
 import org.mule.runtime.core.internal.context.thread.notification.ThreadLoggingExecutorServiceDecorator;
 
-import java.util.function.Supplier;
-
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
+
+import java.util.function.Supplier;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.retry.BackoffDelay;
@@ -121,11 +122,11 @@ public class ProactorStreamProcessingStrategyFactory extends ReactorStreamProces
                                             Supplier<Scheduler> cpuLightSchedulerSupplier,
                                             Supplier<Scheduler> blockingSchedulerSupplier,
                                             Supplier<Scheduler> cpuIntensiveSchedulerSupplier,
-                                            int parrelism,
+                                            int parallelism,
                                             int maxConcurrency, boolean isThreadLoggingEnabled)
 
     {
-      super(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, cpuLightSchedulerSupplier, parrelism,
+      super(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, cpuLightSchedulerSupplier, parallelism,
             maxConcurrency);
       this.blockingSchedulerSupplier = blockingSchedulerSupplier;
       this.cpuIntensiveSchedulerSupplier = cpuIntensiveSchedulerSupplier;
@@ -139,12 +140,12 @@ public class ProactorStreamProcessingStrategyFactory extends ReactorStreamProces
                                             Supplier<Scheduler> cpuLightSchedulerSupplier,
                                             Supplier<Scheduler> blockingSchedulerSupplier,
                                             Supplier<Scheduler> cpuIntensiveSchedulerSupplier,
-                                            int parrelism,
+                                            int parallelism,
                                             int maxConcurrency)
 
     {
       this(ringBufferSchedulerSupplier, bufferSize, subscriberCount, waitStrategy, cpuLightSchedulerSupplier,
-           blockingSchedulerSupplier, cpuIntensiveSchedulerSupplier, parrelism, maxConcurrency, false);
+           blockingSchedulerSupplier, cpuIntensiveSchedulerSupplier, parallelism, maxConcurrency, false);
     }
 
     @Override
