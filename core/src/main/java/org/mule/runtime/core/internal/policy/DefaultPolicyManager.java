@@ -72,7 +72,7 @@ public class DefaultPolicyManager implements PolicyManager, Initialisable {
 
     List<Policy> parameterizedPolicies = policyProvider.findSourceParameterizedPolicies(sourcePointcutParameters);
     if (parameterizedPolicies.isEmpty()) {
-      return event -> from(process(event, flowExecutionProcessor))
+      return event -> from(process(sourceEvent, flowExecutionProcessor))
           .switchIfEmpty(fromSupplier(() -> CoreEvent.builder(sourceEvent).message(of(null)).build()))
           .<Either<SourcePolicyFailureResult, SourcePolicySuccessResult>>map(flowExecutionResult -> right(new SourcePolicySuccessResult(flowExecutionResult,
                                                                                                                                         () -> messageSourceResponseParametersProcessor
@@ -81,7 +81,7 @@ public class DefaultPolicyManager implements PolicyManager, Initialisable {
                                                                                                                                         messageSourceResponseParametersProcessor)))
           .onErrorResume(Exception.class, e -> {
             MessagingException messagingException = e instanceof MessagingException ? (MessagingException) e
-                : new MessagingException(event, e, (Component) flowExecutionProcessor);
+                : new MessagingException(sourceEvent, e, (Component) flowExecutionProcessor);
             return just(Either
                 .left(new SourcePolicyFailureResult(messagingException, () -> messageSourceResponseParametersProcessor
                     .getFailedExecutionResponseParametersFunction()

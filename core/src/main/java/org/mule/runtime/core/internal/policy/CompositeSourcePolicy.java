@@ -6,11 +6,9 @@
  */
 package org.mule.runtime.core.internal.policy;
 
-import static java.util.Optional.empty;
 import static org.mule.runtime.api.exception.MuleException.INFO_ALREADY_LOGGED_KEY;
 import static org.mule.runtime.core.api.functional.Either.left;
 import static org.mule.runtime.core.api.functional.Either.right;
-import static org.mule.runtime.core.privileged.processor.MessageProcessors.processWithChildContext;
 import static org.slf4j.LoggerFactory.getLogger;
 import static reactor.core.publisher.Mono.from;
 import static reactor.core.publisher.Mono.just;
@@ -87,8 +85,11 @@ public class CompositeSourcePolicy extends
    */
   @Override
   protected Publisher<CoreEvent> processNextOperation(CoreEvent event) {
+    // Publisher<CoreEvent> responsePublisher = ((BaseEventContext) event.getContext()).getResponsePublisher();
     return just(event)
-        .flatMap(request -> from(processWithChildContext(request, flowExecutionProcessor, empty())))
+        // .flatMap(request -> from(MessageProcessors.processWithChildContext(request, flowExecutionProcessor, Optional.empty())))
+        .transform(flowExecutionProcessor) //
+        // .switchIfEmpty(from(responsePublisher)) //
         .map(flowExecutionResponse -> {
           originalResponseParameters =
               getParametersProcessor().getSuccessfulExecutionResponseParametersFunction().apply(flowExecutionResponse);
