@@ -6,9 +6,12 @@
  */
 package org.mule.runtime.module.extension.internal.util;
 
-import java.lang.reflect.Field;
+import static java.lang.invoke.MethodHandles.lookup;
 
-import org.springframework.util.ReflectionUtils;
+import org.mule.runtime.api.exception.MuleRuntimeException;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
 
 /**
  * Utility class which allows setting the value of a {@link Field} on random compatible instances
@@ -18,14 +21,17 @@ import org.springframework.util.ReflectionUtils;
  */
 public final class FieldSetter<Target, Value> {
 
-  /**
-   * The {@link Field} in which the value is to be assigned
-   */
   private final Field field;
+  private final MethodHandle fieldSetter;
 
   public FieldSetter(Field field) {
     this.field = field;
     field.setAccessible(true);
+    try {
+      fieldSetter = lookup().unreflectSetter(field);
+    } catch (IllegalAccessException ex) {
+      throw new IllegalStateException("Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
+    }
   }
 
   /**
@@ -35,7 +41,11 @@ public final class FieldSetter<Target, Value> {
    * @param value the value to set
    */
   public void set(Target target, Value value) {
-    ReflectionUtils.setField(field, target, value);
+    try {
+      fieldSetter.invoke(target, value);
+    } catch (Throwable e) {
+      throw new MuleRuntimeException(e);
+    }
   }
 
   /**
