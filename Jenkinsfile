@@ -1,4 +1,4 @@
-def UPSTREAM_PROJECTS_LIST = ["Mule-runtime/mule-common/3.9.x"]
+def UPSTREAM_PROJECTS_LIST = ["Mule-runtime/mule-common/3.8.x"]
 
 Map pipelineParams = ["upstreamProjects"   : UPSTREAM_PROJECTS_LIST.join(','),
                       "mavenSettingsXmlId" : "mule-runtime-maven-settings-MuleSettings",
@@ -8,5 +8,4 @@ Map pipelineParams = ["upstreamProjects"   : UPSTREAM_PROJECTS_LIST.join(','),
                       "mavenDeployGoal"    : "deploy -DskipTests -DskipITs -Dinvoker.skip -Dlicense.skip -DskipVerifications"]
 
 runtimeProjectsBuild(pipelineParams)
-
 
